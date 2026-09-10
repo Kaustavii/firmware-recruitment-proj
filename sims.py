@@ -1,3 +1,6 @@
+import time
+
+
 max_cellV = 4.0
 min_cellV = 2.5
 min_cell_temp = 0
@@ -10,6 +13,7 @@ class Cell:
         if min_cellV <= self.voltage <= max_cellV and min_cell_temp <= self.temperature <= max_cell_temp:
             return False
         return True
+    
 class Module:
     def __init__(self, name, cells):
         self.name = name
@@ -21,13 +25,46 @@ class Module:
             if c.cell_error() == True:
                 return True
         return False
+    def missing_cell_data(self):
+        if self.cells.length() != 4:
+            return True
+    
 class Accumulator:
-    def __init__(self, modules):
+    def __init__(self, modules, overcurrent_protection):
         self.modules = modules #5 element list of modules
+        self.overcurrent_protection = overcurrent_protection
+        self.battery_connection = False
+        self.highV = False
+        self.lowV = False
+
     def go_into_error(self):
         for m in self.modules:
             if m.mod_error():
                 return True
-class StateMachine:
-    def __init__(self):
-        pass
+            
+class BMS_StateMachine:
+    def __init__(self, accumulator):
+        self.accumulator = accumulator
+        self.driving = False
+        self.charging = False
+        self.BMS_indicator = False
+        self.tractive_indicator = False
+        self.tractive_system_on = False
+    def shutdown_circuit(self):
+        self.BMS_indicator = True
+        self.tractive_indicator = True
+        time.sleep(3) #take 3 seconds hopefully to turn off high voltage if it is on if not nothing new
+        self.accumulator.highV = False
+        self.tractive_system_on = False
+
+    def charging_shutdown(self):
+        pass #fix
+    def initialize(self):
+        #starting the car
+        self.accumulator.lowV = True
+        return self.calibrate(self) #fix to make it call calibrate aka transitioning to calibrate
+    def calibrate(self):
+        if self.accumulator.go_into_error() or self.accumulator.modules.missing_cell_data():
+            return self.shutdown_circuit(self)
+
+    
