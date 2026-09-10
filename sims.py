@@ -18,9 +18,16 @@ class Module:
         #will scale the battery down to 5 modules instead of 10 to simplify simulation
     def mod_error(self):
         for c in self.cells:
-            if c.will_error() == True:
+            if c.cell_error() == True:
                 return True
         return False
-class accumulator:
+class Accumulator:
+    def __init__(self, modules):
+        self.modules = modules #5 element list of modules
+    def go_into_error(self):
+        for m in self.modules:
+            if m.mod_error():
+                return True
+class StateMachine:
     def __init__(self):
         pass
