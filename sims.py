@@ -26,8 +26,9 @@ class Module:
                 return True
         return False
     def missing_cell_data(self):
-        if self.cells.length() != 4:
+        if len(self.cells) != 4:
             return True
+        return False
     
 class Accumulator:
     def __init__(self, modules, overcurrent_protection):
@@ -36,11 +37,18 @@ class Accumulator:
         self.battery_connection = False
         self.highV = False
         self.lowV = False
+        self.on = False
 
-    def go_into_error(self):
+    def missing_data_error(self):
+        for m in self.modules:
+            if m.missing_cell_data():
+                return True
+        return False
+    def volt_or_temp_error(self):
         for m in self.modules:
             if m.mod_error():
                 return True
+        return False
             
 class BMS_StateMachine:
     def __init__(self, accumulator):
@@ -49,22 +57,30 @@ class BMS_StateMachine:
         self.charging = False
         self.BMS_indicator = False
         self.tractive_indicator = False
-        self.tractive_system_on = False
     def shutdown_circuit(self):
         self.BMS_indicator = True
         self.tractive_indicator = True
         time.sleep(3) #take 3 seconds hopefully to turn off high voltage if it is on if not nothing new
         self.accumulator.highV = False
-        self.tractive_system_on = False
+        self.accumulator.on = False
 
     def charging_shutdown(self):
         pass #fix
     def initialize(self):
         #starting the car
         self.accumulator.lowV = True
-        return self.calibrate(self) #fix to make it call calibrate aka transitioning to calibrate
+        return self.calibrate()
+    def error(self):
+        if self.accumulator.missing_data_error() or self.accumulator.volt_or_temp_error():
+            return True
+        return False
     def calibrate(self):
-        if self.accumulator.go_into_error() or self.accumulator.modules.missing_cell_data():
-            return self.shutdown_circuit(self)
-
-    
+        if self.error():
+            return self.shutdown_circuit()
+        return self.idle()
+    def idle(self):
+        self.battery_connection = False
+        #constantly checking requirements to see if it needs to open shutdown circuit
+        #scaled down so only checking in once but in real car would have while in idle checking requirements constantly
+        
+    def precharge(self):
