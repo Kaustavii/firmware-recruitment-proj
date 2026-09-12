@@ -25,8 +25,9 @@ class Module:
                 return True
         return False
     def missing_cell_data(self):
-        if len(self.cells) != 4:
-            return True
+        for c in self.cells:
+            if c == None:
+                return True
         return False
     
 class Accumulator:
@@ -175,9 +176,9 @@ class TestOne:
         self.state_mach = BMS_StateMachine(self.accumulator, 3, 1, 0)
     def state_machine_sim(self):
         return self.state_mach.initialize()
-if __name__ == "__main__":
-    test = TestOne()
-    test.state_machine_sim()
+#if __name__ == "__main__":
+    #test = TestOne()
+    #test.state_machine_sim()
 class TestTwo:
     #testing as if voltage condition not met
     def __init__(self):
@@ -211,4 +212,25 @@ class TestThree:
         return self.state_mach.initialize()
 #if __name__ == "__main__":
     #test = TestThree()
+    #test.state_machine_sim()
+
+"""small CAN simulation; the cells send out their data (voltage and temp) through their can nodes and they travel through the bus
+and then when it goes to another CAN node the one recieving checks the ID and then accepts it and uses it"""
+#if had more time would've tried implemented the ID portion of CAN
+class TestCan:
+    #testing as if temp condition not met
+    def __init__(self):
+        self.cell_list = [Cell(3.0, 40), Cell(2.70, 45), Cell(3.55, 60), None]
+        self.mod1 = Module("one", self.cell_list)
+        self.mod2 = Module("two", self.cell_list)
+        self.mod3 = Module("three", self.cell_list)
+        self.mod4 = Module("four", self.cell_list)
+        self.mod5 = Module("five", self.cell_list)
+        self.mod_list = [self.mod1, self.mod2, self.mod3, self.mod4, self.mod5]
+        self.accumulator = Accumulator(self.mod_list, "good")
+        self.state_mach = BMS_StateMachine(self.accumulator, 3, 1, 0)
+    def state_machine_sim(self):
+        return self.state_mach.initialize()
+#if __name__ == "__main__":
+    #test = TestCan()
     #test.state_machine_sim()
