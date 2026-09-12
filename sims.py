@@ -81,16 +81,16 @@ class BMS_StateMachine:
         #starting the car
         print('initialization')
         self.accumulator.lowV = True
-        time.sleep(1)
+        time.sleep(3)
         print('transition to calibrate')
         return self.calibrate()
     def calibrate(self):
         print('calibrate')
         if self.error():
-            time.sleep(1)
+            time.sleep(3)
             print('transition to shutdown circuit')
             return self.shutdown_circuit()
-        time.sleep(1)
+        time.sleep(3)
         print('transition to idle')
         return self.idle()  
     def idle(self):
@@ -99,19 +99,19 @@ class BMS_StateMachine:
         #constantly checking requirements to see if it needs to open shutdown circuit
         #scaled down so only checking in once but in real car would have while in idle checking requirements constantly
         if self.error():
-            time.sleep(1)
+            time.sleep(3)
             print('transition to shutdown')
             return self.shutdown_circuit()
         which = self.drive_or_charge()
         #checking which state to go into based on if the battery is charging or not
         if which == "C":
             self.charging = True
-            time.sleep(1)
+            time.sleep(3)
             print('transition to charging')
             return self.charging_state()
         if which == "D":
             self.driving = True
-            time.sleep(1)
+            time.sleep(3)
             print('transition to precharge')
             return self.precharge()
     def precharge(self):
@@ -119,7 +119,7 @@ class BMS_StateMachine:
         self.IR_charge = 90 #intermediate relay required to reach 90%
         self.accumulator.highV = True #high voltage turned on now
         self.accumulator.battery_connection = True
-        time.sleep(1)
+        time.sleep(3)
         print('transition to ready to drive')
         return self.ready_to_drive(self.driving_time)
     def ready_to_drive(self, drive_time):
@@ -127,11 +127,11 @@ class BMS_StateMachine:
         """not safe to have car driving and randomly shut off so if time change it so sets a warning for driver
         to stop car and then open shutdown circuit to cool down battery"""
         if self.error():
-            time.sleep(1)
+            time.sleep(3)
             print('transition to shutdown')
             return self.shutdown_circuit()
         print("ready to drive!")
-        time.sleep(1)
+        time.sleep(3)
         return self.shutdown(drive_time)
     def shutdown(self, off_time):
         print("shutdown")
@@ -144,22 +144,22 @@ class BMS_StateMachine:
         return "done" #in 
     def charging_shutdown(self):
         print("charging shutdown")
-        time.sleep(3) #wait 3 secs to switch to low voltage only
+        time.sleep(4) #wait 4 secs to switch to low voltage only
         self.accumulator.highV = False
         self.charging = False #charging taken off until manually reset
-        time.sleep(1)
+        time.sleep(3)
         print('transition to idle')
         return self.idle()
     def charging_state(self):
         print("charging state")
         if self.error():
-            time.sleep(1)
+            time.sleep(3)
             print('transition to charging shutdown')
             return self.charging_shutdown()
-        time.sleep(1)
+        time.sleep(3)
         print('done charging. transitioning to shutoff')
         self.charging = False
-        return self.shutdown(1)
+        return self.shutdown(3)
 #unit tests to simulate conditions !!!!!
 class TestOne:
     #testing as if all conditions were met for driving/charging
