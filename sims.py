@@ -162,7 +162,41 @@ class TestOne:
         self.accumulator = Accumulator(self.mod_list, "good")
         self.state_mach = BMS_StateMachine(self.accumulator, 3, 1, 0)
     def state_machine_sim(self):
-        self.state_mach.initialize()
+        return self.state_mach.initialize()
 #if __name__ == "__main__":
     #test = TestOne()
+    #test.state_machine_sim()
+class TestTwo:
+    #testing as if voltage condition not met
+    def __init__(self):
+        self.cell_list = [Cell(3.0, 40), Cell(2.70, 45), Cell(4.10, 35), Cell(3.85, 53)]
+        self.mod1 = Module("one", self.cell_list)
+        self.mod2 = Module("two", self.cell_list)
+        self.mod3 = Module("three", self.cell_list)
+        self.mod4 = Module("four", self.cell_list)
+        self.mod5 = Module("five", self.cell_list)
+        self.mod_list = [self.mod1, self.mod2, self.mod3, self.mod4, self.mod5]
+        self.accumulator = Accumulator(self.mod_list, "good")
+        self.state_mach = BMS_StateMachine(self.accumulator, 3, 1, 0)
+    def state_machine_sim(self):
+        return self.state_mach.initialize()
+#if __name__ == "__main__":
+    #test = TestTwo()
+    #test.state_machine_sim()
+class TestThree:
+    #testing as if temp condition not met
+    def __init__(self):
+        self.cell_list = [Cell(3.0, 40), Cell(2.70, 45), Cell(3.55, 60), Cell(3.85, 53)]
+        self.mod1 = Module("one", self.cell_list)
+        self.mod2 = Module("two", self.cell_list)
+        self.mod3 = Module("three", self.cell_list)
+        self.mod4 = Module("four", self.cell_list)
+        self.mod5 = Module("five", self.cell_list)
+        self.mod_list = [self.mod1, self.mod2, self.mod3, self.mod4, self.mod5]
+        self.accumulator = Accumulator(self.mod_list, "good")
+        self.state_mach = BMS_StateMachine(self.accumulator, 3, 1, 0)
+    def state_machine_sim(self):
+        return self.state_mach.initialize()
+#if __name__ == "__main__":
+    #test = TestThree()
     #test.state_machine_sim()
